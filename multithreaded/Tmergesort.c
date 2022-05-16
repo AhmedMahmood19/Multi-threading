@@ -7,7 +7,7 @@
 long N;
 
 // No. of threads
-#define N_THREAD 7
+#define N_THREAD 4
 
 // array to be sorted
 int *array;
