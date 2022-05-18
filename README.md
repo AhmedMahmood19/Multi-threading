@@ -5,4 +5,4 @@
 ## Algorithms Implemented:
 ### 1.  Merge Sort
 ### 2. Quick Sort
-### 3. Binary Search
+### 3. Harmonic Progression
