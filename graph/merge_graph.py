@@ -9,6 +9,7 @@ plt.xlabel("Number of Elements in Array", fontsize=18)
 ax.title.set_fontsize(26)       #fontsize of "Merge Sort"
 ax.legend(loc=2, prop={'size': 18}) #fontsize of legend "Single threaded etc"
 ax.ticklabel_format(useMathText=True)   #replaces 1e9 with x10^9 
-plt.ylim(0, 200)    #sets limit of y axis
+plt.ylim(0, 250)    #sets limit of y axis
 plt.xlim(0, 1.1e9)  #sets limit of x axis
+plt.savefig('merge-graph.png')
 plt.show()
