@@ -98,17 +98,19 @@ void quickSort(int *arr, int size)
     quickSortHelper(arr, 0, size - 1);
 }
 
-int main()
+int main(int argc, char **argv)
 {
     // dynamic allocation of array
-    N=10000000;
+    N=strtol(argv[1],NULL,10);
+    srand(time(NULL));
+    arr=calloc(N,sizeof(int));
     THRESHOLD=N/12;
-    arr = malloc(N * sizeof(long));
+    
 
     // generate an array of random numbers
     for (long i = 0; i < N; i++)
     {
-        arr[i] = rand() % 999;
+        arr[i] = rand();
     }
 
     printf("Unsorted\n");
