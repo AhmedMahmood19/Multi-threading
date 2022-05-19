@@ -5,29 +5,15 @@
 #include <time.h>
 #include <stdbool.h>
 
-#define N 3000
-#define THRESHOLD (N / 12)
+int *arr;
+long N;
+long THRESHOLD;
 
 #define swap(x, y) \
     int _t = x;    \
     x = y;         \
     y = _t;
 
-double read_timer()
-{
-    static bool initialized = false;
-    static struct timeval start;
-    struct timeval end;
-    if (!initialized)
-    {
-        gettimeofday(&start, NULL);
-        initialized = true;
-    }
-    gettimeofday(&end, NULL);
-    return (end.tv_sec - start.tv_sec) + 1.0e-6 * (end.tv_usec - start.tv_usec);
-}
-
-double start_time, end_time; /* start and end times */
 
 void printArray(int const *arr, int size)
 {
@@ -47,11 +33,11 @@ typedef struct
     int hi;
 } ThreadArg;
 
-int partition(int *arr, int lo, int hi)
+int partition(int *arr, long lo,  long hi)
 {
     int pivot = arr[hi];
     int i = lo - 1;
-    for (int j = lo; j < hi; ++j)
+    for (long j = lo; j < hi; ++j)
     {
         // If current element is smaller than pivot
         if (arr[j] < pivot)
@@ -67,7 +53,7 @@ int partition(int *arr, int lo, int hi)
 
 void *quickSortThreadFunc(void *arg);
 
-void quickSortHelper(int *arr, int lo, int hi)
+void quickSortHelper(int *arr,   long lo, long hi)
 {
     if (lo < hi)
     {
@@ -115,30 +101,29 @@ void quickSort(int *arr, int size)
 int main()
 {
     // dynamic allocation of array
-    int *arr = malloc(N * sizeof(long));
+    N=10000000;
+    THRESHOLD=N/12;
+    arr = malloc(N * sizeof(long));
 
     // generate an array of random numbers
-    for (int i = 0; i < N; i++)
+    for (long i = 0; i < N; i++)
     {
         arr[i] = rand() % 999;
     }
 
     printf("Unsorted\n");
-    for (int i = 0; i < N; i++)
+    for (long i = 0; i < N; i++)
     {
         printf(" %d ", arr[i]);
     }
 
-    start_time = read_timer(); // read time before running the function
     quickSort(arr, N);
-    end_time = read_timer(); // read time after function ends
 
     printf("Sorted\n");
-    for (int i = 0; i < N; i++)
+    for (long i = 0; i < N; i++)
     {
         printf(" %d ", arr[i]);
     }
-    printf("\n");
-    printf("The execution time was:  %lf secs\n", end_time - start_time);
+    
     free(arr);
 }
