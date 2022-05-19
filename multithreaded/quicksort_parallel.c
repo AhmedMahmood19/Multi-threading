@@ -1,84 +1,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include <sys/time.h>
 #include <time.h>
-#include <stdbool.h>
 
 int *arr;
 long N;
 long THRESHOLD;
-
-#define swap(x, y) \
-    int _t = x;    \
-    x = y;         \
-    y = _t;
-
-
-void printArray(int const *arr, int size)
-{
-    for (int i = 0; i < size; ++i)
-    {
-        printf("%d ", arr[i]);
-    }
-    puts("");
-}
 
 // a stucture to pass as parameter to the thread creation function
 // because we need to send multiple parameters but thread_create function only takes 1 arg parameter for the function it's calling
 typedef struct
 {
     int *arr;
-    int lo;
-    int hi;
+    long start;
+    long end;
 } ThreadArg;
 
-int partition(int *arr, long lo,  long hi)
-{
-    int pivot = arr[hi];
-    int i = lo - 1;
-    for (long j = lo; j < hi; ++j)
-    {
-        // If current element is smaller than pivot
-        if (arr[j] < pivot)
-        {
-            ++i;
-            swap(arr[i], arr[j]);
-            // i++; // increment index of smaller element
-        }
-    }
-    swap(arr[i + 1], arr[hi]);
-    return i + 1;
-}
-
+void swap(int *a, int *b);
+void printarray(int *array);
 void *quickSortThreadFunc(void *arg);
+void quickSort(int *arr, long start, long end);
+long partition(int *arr, long start, long end);
 
-void quickSortHelper(int *arr,   long lo, long hi)
+int main(int argc, char **argv)
 {
-    if (lo < hi)
+    // dynamic allocation of array
+    N = strtol(argv[1], NULL, 10);
+    srand(time(NULL));
+    arr = calloc(N, sizeof(int));
+    THRESHOLD = N / 12;
+    // generate an array of random numbers
+    for (long i = 0; i < N; i++)
     {
-        int pi = partition(arr, lo, hi);
-        pthread_t id = 0;
-        ThreadArg arg = {arr, lo, pi - 1};
-        // threshold is basically a level if hi-lo < threshold then creating threads isnt efficient and thus normal sequential call is better
-        // threshold calculation can differ, it's hardcoded, threshold = maxlength / 12 ;
-        if (arg.hi - arg.lo > THRESHOLD)
-        {
-            pthread_create(&id, NULL, quickSortThreadFunc, &arg); //new thread created for left partition only because we already have a thread so we need only 1 more
-            //eg. 1 thread running the quicksort, now if we need another thread we'll make a thread for the left partition while right partition stays on the main thread
-            // thus we'll get 2 threads.
-            //creating two threads for left and right would result in extra thread creation as we already have on main thread which could be utilised
-        }
-        else
-        {
-            quickSortHelper(arr, lo, pi - 1); //recursive call for left partition
-        }
-        quickSortHelper(arr, pi + 1, hi); //recursive call for right partition
-        if (id != 0)
-        {
-            pthread_join(id, NULL);
-        }
+        arr[i] = rand();
     }
+    printf("Unsorted\n");
+    // printarray(arr);
+    quickSort(arr,0,N-1);
+    printf("Sorted\n");
+    // printarray(arr);
+    free(arr);
 }
 
 // function to convert our void arg which are standard for pthread into normal arguements that could be sent as parameter to our quicksort function
@@ -88,44 +49,63 @@ void *quickSortThreadFunc(void *arg)
     // typeCasting
     ThreadArg *qarg = (ThreadArg *)arg;
     printf("\n~Thread created~\n");
-    quickSortHelper(qarg->arr, qarg->lo, qarg->hi);
+    quickSort(qarg->arr, qarg->start, qarg->end);
     return NULL;
 }
-
-void quickSort(int *arr, int size)
+void quickSort(int *arr, long start, long end)
 {
-    // actual quick sort function
-    quickSortHelper(arr, 0, size - 1);
+    if (start < end)
+    {
+        long pi = partition(arr, start, end);
+        pthread_t id = 0;
+        ThreadArg arg = {arr, start, pi - 1};
+        // threshold is basically a level if end-start < threshold then creating threads isnt efficient and thus normal sequential call is better
+        // threshold calculation can differ, it's hardcoded, threshold = maxlength / 12 ;
+        if (arg.end - arg.start > THRESHOLD)
+        {
+            pthread_create(&id, NULL, quickSortThreadFunc, &arg); // new thread created for left partition only because we already have a thread so we need only 1 more
+            // eg. 1 thread running the quicksort, now if we need another thread we'll make a thread for the left partition while right partition stays on the main thread
+            //  thus we'll get 2 threads.
+            // creating two threads for left and right would result in extra thread creation as we already have on main thread which could be utilised
+        }
+        else
+        {
+            quickSort(arr, start, pi - 1); // recursive call for left partition
+        }
+        quickSort(arr, pi + 1, end); // recursive call for right partition
+        if (id != 0)
+        {
+            pthread_join(id, NULL);
+        }
+    }
 }
 
-int main(int argc, char **argv)
+long partition(int *arr, long start, long end)
 {
-    // dynamic allocation of array
-    N=strtol(argv[1],NULL,10);
-    srand(time(NULL));
-    arr=calloc(N,sizeof(int));
-    THRESHOLD=N/12;
-    
-
-    // generate an array of random numbers
+    int pivot = arr[end];
+    long i = start;
+    for (long j = start; j < end; ++j)
+    {
+        // If current element is smaller than pivot
+        if (arr[j] <= pivot)
+        {
+            swap(&arr[i], &arr[j]);
+            i++;
+        }
+    }
+    swap(&arr[i], &arr[end]);
+    return i;
+}
+void printarray(int *array)
+{
     for (long i = 0; i < N; i++)
     {
-        arr[i] = rand();
+        printf("%d\n", array[i]);
     }
-
-    printf("Unsorted\n");
-    for (long i = 0; i < N; i++)
-    {
-        printf(" %d ", arr[i]);
-    }
-
-    quickSort(arr, N);
-
-    printf("Sorted\n");
-    for (long i = 0; i < N; i++)
-    {
-        printf(" %d ", arr[i]);
-    }
-    
-    free(arr);
+}
+void swap(int *a, int *b)
+{
+    int t = *a;
+    *a = *b;
+    *b = t;
 }

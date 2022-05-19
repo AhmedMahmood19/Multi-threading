@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     // Random numbers are filled into the array    
     for (long i = 0; i < N; i++)
     {
-        array[i] = rand() % 1000;
+        array[i] = rand();
     }
     printf("Unsorted Array:\n");
     // printarray();

@@ -1,96 +1,71 @@
 #include <stdio.h>
-#include <sys/time.h>
-#include <time.h>
-#include <stdbool.h>
 #include <stdlib.h>
+#include <time.h>
 
-#define N 3000
+long N; // to make command line args global
 
+void swap(int *a, int *b);
+void quicksort(int *array, long start, long end);
+long partition(int *array, long start, long end);
+void printarray(int *array);
 
-double read_timer()
+int main(int argc, char **argv)
 {
-    static bool initialized = false;
-    static struct timeval start;
-    struct timeval end;
-    if (!initialized)
-    {
-        gettimeofday(&start, NULL);
-        initialized = true;
-    }
-    gettimeofday(&end, NULL);
-    return (end.tv_sec - start.tv_sec) + 1.0e-6 * (end.tv_usec - start.tv_usec);
+  N = strtol(argv[1], NULL, 10);
+  srand(time(NULL));                   // to randomise the numbers to be sorted
+  int *array = calloc(N, sizeof(int)); // allocate memory for array
+  for (long i = 0; i < N; i++)
+  {
+    array[i] = rand();
+  }
+  printf("Unsorted Array:\n");
+  // printarray(array);
+  quicksort(array, 0, N - 1);
+  printf("\nSorted Array:\n");
+  // printarray(array);
+  free(array);
+  return 0;
 }
-
-double start_time, end_time; /* start and end times */
-
-
-void quicksort(int number[25], int first, int last)
+void printarray(int *array)
 {
-
-    int i, j, pivot, temp;
-
-    if (first < last)
-    {
-
-        pivot = first;
-
-        i = first;
-
-        j = last;
-
-        while (i < j)
-        {
-
-            while (number[i] <= number[pivot] && i < last)
-                i++;
-
-            while (number[j] > number[pivot])
-                j--;
-
-            if (i < j)
-            {
-
-                temp = number[i];
-
-                number[i] = number[j];
-
-                number[j] = temp;
-            }
-        }
-
-        temp = number[pivot];
-
-        number[pivot] = number[j];
-
-        number[j] = temp;
-
-        quicksort(number, first, j - 1);
-
-        quicksort(number, j + 1, last);
-    }
+  for (long i = 0; i < N; i++)
+  {
+    printf("%d\n", array[i]);
+  }
 }
-
-int main()
+void swap(int *a, int *b)
 {
-
-    int i, arr[N];
-
-     // generate an array of random numbers 
-    for (int i=0 ; i<N ; i++){
-        arr[i] = rand()%999;
+  int t = *a;
+  *a = *b;
+  *b = t;
+}
+long partition(int *array, long start, long end)
+{
+  int pivot = array[end]; // last element is the pivot
+  long i = start;         // i set at start of subarray
+  for (long j = start; j < end; j++)
+  {
+    // iterates through whole array and if current element is smaller than the pivot then
+    if (array[j] <= pivot)
+    {
+      // swap current element with the element at i, and increment i to point to the next element
+      swap(&array[i], &array[j]);
+      i++;
     }
-    start_time = read_timer(); //read time before running the function
-
-    quicksort(arr, 0, N - 1);
-
-    end_time = read_timer();// read time after function ends
-
-    printf("The Sorted Order is: ");
-
-    for (i = 0; i < N; i++)
-        printf(" %d", arr[i]);
-
-    printf("\n");
-    printf("The execution time was:  %lf secs\n", end_time - start_time);
-    return 0;
+  }
+  // Finally pivot swapped with element at i, thus pivot has smaller elements to the left and larger to the right
+  swap(&array[i], &array[end]);
+  // return the partition index to p
+  return i;
+}
+void quicksort(int *array, long start, long end)
+{
+  if (start < end)
+  {
+    // smaller elements left of index p and larger elements right of index p
+    long p = partition(array, start, end);
+    // partition into smaller subarrays using p
+    quicksort(array, start, p - 1);
+    quicksort(array, p + 1, end);
+  }
 }

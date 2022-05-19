@@ -15,7 +15,7 @@ int main(int argc, char **argv)
     int *array=calloc(N,sizeof(int)); //allocate memory for array
     for (long i = 0; i < N; i++)
     {
-        array[i] = rand()%1000;
+        array[i] = rand();
     }
     printf("Unsorted Array:\n");
     // printarray(array);
@@ -23,6 +23,7 @@ int main(int argc, char **argv)
     printf("\nSorted Array:\n");
     // printarray(array);
     free(array);
+    return 0;
 }
 void printarray(int *array){
     for (long i = 0; i < N; i++)
