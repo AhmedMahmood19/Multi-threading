@@ -67,7 +67,7 @@ int main(int argc, char **argv)
     {
         pthread_join(tid[i], NULL);    
     }
-    //print the series
+    // //print the series
     // for(long i=0;i<N;i++)
     // {
     //     printf("%lf\n",arr[i]);

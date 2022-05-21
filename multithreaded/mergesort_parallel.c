@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     {
         array[i] = rand();
     }
-    printf("Unsorted Array:\n");
+    // printf("Unsorted Array:\n");
     // printarray();
 
     // array for thread ids and thread parameters are declared
@@ -84,8 +84,8 @@ int main(int argc, char **argv)
         merge(tplist[0].start, tplist[i].start - 1, tplist[i].end);
     }
 
-    // Print sorted array
-    printf("Sorted Array:\n");
+    // //Print sorted array
+    // printf("Sorted Array:\n");
     // printarray();
     free(array);
     return 0;

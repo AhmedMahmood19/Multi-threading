@@ -34,10 +34,10 @@ int main(int argc, char **argv)
     {
         arr[i] = rand();
     }
-    printf("Unsorted\n");
+    // printf("Unsorted Array\n");
     // printarray(arr);
     quickSort(arr,0,N-1);
-    printf("Sorted\n");
+    // printf("Sorted Array\n");
     // printarray(arr);
     free(arr);
 }
@@ -48,7 +48,7 @@ void *quickSortThreadFunc(void *arg)
 {
     // typeCasting
     ThreadArg *qarg = (ThreadArg *)arg;
-    printf("\n~Thread created~\n");
+    // printf("\n~Thread created~\n");
     quickSort(qarg->arr, qarg->start, qarg->end);
     return NULL;
 }

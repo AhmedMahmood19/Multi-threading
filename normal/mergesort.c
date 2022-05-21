@@ -17,10 +17,10 @@ int main(int argc, char **argv)
     {
         array[i] = rand();
     }
-    printf("Unsorted Array:\n");
+    // printf("Unsorted Array:\n");
     // printarray(array);
     mergesort(0, N - 1, array);
-    printf("\nSorted Array:\n");
+    // printf("\nSorted Array:\n");
     // printarray(array);
     free(array);
     return 0;
