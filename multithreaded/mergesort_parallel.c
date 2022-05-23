@@ -3,6 +3,7 @@
 #include <time.h>
 #include <pthread.h>
 
+#define isPrinting 0
 // No. of elements in the array
 long N;
 
@@ -26,23 +27,27 @@ void merge(long start, long mid, long end);
 
 int main(int argc, char **argv)
 {
-    N=strtol(argv[1],NULL,10);
+    N = strtol(argv[1], NULL, 10);
     srand(time(NULL));
-    array=calloc(N,sizeof(int));//allocate memory for array
-    // Random numbers are filled into the array    
+    array = calloc(N, sizeof(int)); // allocate memory for array
+    // Random numbers are filled into the array
     for (long i = 0; i < N; i++)
     {
         array[i] = rand();
     }
-    // printf("Unsorted Array:\n");
-    // printarray();
+    if (isPrinting)
+    {
+        printf("\nMerge Sort in Parallel for N=%ld\n",N);
+        printf("\nUnsorted Array:\n");
+        printarray();
+    }
 
     // array for thread ids and thread parameters are declared
     pthread_t tid[N_THREAD];
     struct threadparam tplist[N_THREAD];
-    //total elements divided by total threads so array is divided amongst threads as equally as possible(subN is size of subarrays)
+    // total elements divided by total threads so array is divided amongst threads as equally as possible(subN is size of subarrays)
     long subN = N / N_THREAD;
-    //the start index of the first subarray will be 0 
+    // the start index of the first subarray will be 0
     long start = 0;
 
     // thread parameters are set
@@ -50,18 +55,18 @@ int main(int argc, char **argv)
     {
         if (i == (N_THREAD - 1))
         {
-            //if last subarray:
-            //end index will be one less than total length of whole array
+            // if last subarray:
+            // end index will be one less than total length of whole array
             tplist[i].end = N - 1;
         }
         else
         {
-            //if it's not the last subarray:
-            //end index of a subarray will be one less than start index of next subarray
+            // if it's not the last subarray:
+            // end index of a subarray will be one less than start index of next subarray
             tplist[i].end = (start + subN) - 1;
         }
         tplist[i].start = start;
-        //start index is incremented by the No. of elements in sub array to get start index of next subarray
+        // start index is incremented by the No. of elements in sub array to get start index of next subarray
         start += subN;
     }
 
@@ -80,13 +85,16 @@ int main(int argc, char **argv)
     // The final merged subarray of each thread will be all merged together
     for (int i = 1; i < N_THREAD; i++)
     {
-        //the subarrays are merged one by one going from left to right(the left subarray grows)
+        // the subarrays are merged one by one going from left to right(the left subarray grows)
         merge(tplist[0].start, tplist[i].start - 1, tplist[i].end);
     }
 
-    // //Print sorted array
-    // printf("Sorted Array:\n");
-    // printarray();
+    // Print sorted array
+    if (isPrinting)
+    {
+        printf("\nSorted Array:\n");
+        printarray();
+    }
     free(array);
     return 0;
 }

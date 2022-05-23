@@ -3,6 +3,8 @@
 #include <pthread.h>
 #include <time.h>
 
+#define isPrinting 0
+
 int *arr;
 long N;
 long THRESHOLD;
@@ -34,11 +36,18 @@ int main(int argc, char **argv)
     {
         arr[i] = rand();
     }
-    // printf("Unsorted Array\n");
-    // printarray(arr);
-    quickSort(arr,0,N-1);
-    // printf("Sorted Array\n");
-    // printarray(arr);
+    if (isPrinting)
+    {
+        printf("\nQuick Sort in Parallel for N=%ld\n",N);
+        printf("\nUnsorted Array\n");
+        printarray(arr);
+    }
+    quickSort(arr, 0, N - 1);
+    if (isPrinting)
+    {
+        printf("\nSorted Array\n");
+        printarray(arr);
+    }
     free(arr);
 }
 

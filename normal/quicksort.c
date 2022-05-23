@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define isPrinting 0
+
 long N; // to make command line args global
 
 void swap(int *a, int *b);
@@ -18,11 +20,18 @@ int main(int argc, char **argv)
   {
     array[i] = rand();
   }
-  // printf("Unsorted Array:\n");
-  // printarray(array);
+  if (isPrinting)
+  {
+    printf("\nQuick Sort for N=%ld\n",N);
+    printf("\nUnsorted Array:\n");
+    printarray(array);
+  }
   quicksort(array, 0, N - 1);
-  // printf("\nSorted Array:\n");
-  // printarray(array);
+  if (isPrinting)
+  {
+    printf("\nSorted Array:\n");
+    printarray(array);
+  }
   free(array);
   return 0;
 }
